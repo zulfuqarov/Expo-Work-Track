@@ -14,9 +14,6 @@ const MyStack = createStackNavigator()
 
 const StackNavigate = () => {
 
-    const { authLoading } = useContext(WorkContext)
-
-
     return (
         <MyStack.Navigator
         >
@@ -52,10 +49,10 @@ const StackNavigate = () => {
                     gestureEnabled: false,
                     headerShown: false,
                     cardStyleInterpolator: () => ({
-                        cardStyle: { opacity: 1 }  
+                        cardStyle: { opacity: 1 }
                     }),
                     transitionSpec: {
-                        open: { animation: 'timing', config: { duration: 0 } },  
+                        open: { animation: 'timing', config: { duration: 0 } },
                         close: { animation: 'timing', config: { duration: 0 } },
                     }
                 }}

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-nativ
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { WorkContext } from "../../context/ContextWork";
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
     const navigation = useNavigation();
@@ -13,9 +14,17 @@ const Login = () => {
 
     const handleLogin = () => {
         if (!email || !password) {
-            alert("Please fill in all fields");
-            return;
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "Email və ya şifrə boş ola bilməz",
+                position: "top",
+                visibilityTime: 4000, // 4 saniyə ekranda qalsın
+                autoHide: true
+            });
+            return
         }
+
         loginUser(email, password);
     }
 

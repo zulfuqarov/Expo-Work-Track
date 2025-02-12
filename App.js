@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-
 import 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 
 // navigate componets start
 import StackNavigate from './src/screens/navigation/StackNavigate';
@@ -19,6 +19,7 @@ function App() {
         <StackNavigate />
         {/* <BottomNavigation /> */}
       </ContextWork>
+      <Toast />
     </NavigationContainer>
 
   );

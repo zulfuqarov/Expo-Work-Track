@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { WorkContext } from "../../context/ContextWork";
-
+import Toast from "react-native-toast-message";
 
 const Register = () => {
 
@@ -15,17 +15,33 @@ const Register = () => {
 
     const handleRegister = () => {
         if (!email || !password || !confirmPassword || !name) {
-            console.log("Please fill in all fields");
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "Bütün sahələri doldurun, zəhmət olmasa.",
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            });
             return;
         }
 
         if (password !== confirmPassword) {
-            console.log("Passwords do not match");
+            // ✅ Xəta: Şifrələr eyni deyil
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "Şifrələr eyni deyil.",
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            });
             return;
         } else {
-            signUp(email, password, name)
+            signUp(email, password, name);
         }
     };
+
 
     return (
         <View style={styles.container}>

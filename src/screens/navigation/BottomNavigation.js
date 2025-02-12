@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import UserProfile from '../Home/UserProfile';
 const MyTabs = createBottomTabNavigator()
 
 const UserList = () => (
@@ -26,7 +27,7 @@ const BottomNavigation = () => {
 
     return (
         <MyTabs.Navigator
-            initialRouteName="About"
+            initialRouteName="Profile"
 
             screenOptions={{
                 tabBarActiveTintColor: '#FFA500',
@@ -54,13 +55,13 @@ const BottomNavigation = () => {
                 }}
             />
             <MyTabs.Screen
-                name="About"
-                component={About}
+                name="Profile"
+                component={UserProfile}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="information-circle" color={color} size={size} />
                     ),
-                    tabBarLabel: 'Abouts', // Tab başlığı
+                    tabBarLabel: 'Profile', // Tab başlığı
                 }}
             />
         </MyTabs.Navigator>
