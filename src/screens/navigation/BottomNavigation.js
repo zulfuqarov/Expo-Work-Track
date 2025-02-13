@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import UserProfile from '../Home/UserProfile';
+import AddPersonal from '../Home/AddPersonal';
+import Personal from '../Home/Personal';
 const MyTabs = createBottomTabNavigator()
 
 const UserList = () => (
@@ -11,17 +13,6 @@ const UserList = () => (
     </View>
 );
 
-const Home = () => (
-    <View>
-        <Text>Home Screen</Text>
-    </View>
-);
-
-const About = () => (
-    <View>
-        <Text>About Screen</Text>
-    </View>
-);
 
 const BottomNavigation = () => {
 
@@ -35,23 +26,25 @@ const BottomNavigation = () => {
             }}
         >
             <MyTabs.Screen
-                name="UserList"
-                component={UserList}
+                name="Personal"
+                component={Personal}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="person" color={color} size={size} />
                     ),
-                    tabBarLabel: 'Users', // Tab başlığı
+                    tabBarLabel: 'işçilər',
+                    headerShown: false,
                 }}
             />
             <MyTabs.Screen
-                name="Home"
-                component={Home}
+                name="AddPersonal"
+                component={AddPersonal}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home" color={color} size={size} />
+                        <Ionicons name="person-add" color={color} size={size} />
                     ),
-                    tabBarLabel: 'Home', // Tab başlığı
+                    tabBarLabel: 'əlavə et',
+                    headerShown: false,
                 }}
             />
             <MyTabs.Screen
@@ -59,9 +52,10 @@ const BottomNavigation = () => {
                 component={UserProfile}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="information-circle" color={color} size={size} />
+                        <Ionicons name="person-circle" color={color} size={size} />
                     ),
-                    tabBarLabel: 'Profile', // Tab başlığı
+                    tabBarLabel: 'Profil',
+                    headerTitle: 'Profil',
                 }}
             />
         </MyTabs.Navigator>
