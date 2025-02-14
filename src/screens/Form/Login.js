@@ -28,6 +28,8 @@ const Login = () => {
         loginUser(email, password);
     }
 
+
+    
     return (
         <View style={styles.container}>
             <Ionicons name="person-circle-outline" size={80} color="#FFA500" style={styles.icon} />

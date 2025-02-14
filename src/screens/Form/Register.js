@@ -1,5 +1,8 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import {
+    View, Text, TextInput, TouchableOpacity, StyleSheet,
+    TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { WorkContext } from "../../context/ContextWork";
 import Toast from "react-native-toast-message";
@@ -9,12 +12,13 @@ const Register = () => {
     const { signUp } = useContext(WorkContext)
 
     const [name, setName] = useState("")
+    const [department, setDepartment] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleRegister = () => {
-        if (!email || !password || !confirmPassword || !name) {
+        if (!email || !password || !confirmPassword || !name || !department) {
             Toast.show({
                 type: "error",
                 text1: "Xəta!",
@@ -27,7 +31,6 @@ const Register = () => {
         }
 
         if (password !== confirmPassword) {
-            // ✅ Xəta: Şifrələr eyni deyil
             Toast.show({
                 type: "error",
                 text1: "Xəta!",
@@ -38,56 +41,78 @@ const Register = () => {
             });
             return;
         } else {
-            signUp(email, password, name);
+            signUp(
+                email,
+                password,
+                {
+                    name: name,
+                    department: department
+                }
+            );
         }
     };
 
-
     return (
-        <View style={styles.container}>
-            <Ionicons name="person-add-outline" size={80} color="#FFA500" style={styles.icon} />
-            <Text style={styles.title}>Create an Account</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Name"
-                value={name}
-                onChangeText={(text) => setName(text)}
-                keyboardType="default"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={(text) => setEmail(text)}
-                keyboardType="email-address"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-                secureTextEntry
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChangeText={(text) => setConfirmPassword(text)}
-                secureTextEntry
-            />
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+        >
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
+            >
+                <Ionicons name="person-add-outline" size={80} color="#FFA500" style={styles.icon} />
+                <Text style={styles.title}>Create an Account</Text>
 
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Name"
+                    value={name}
+                    onChangeText={setName}
+                    keyboardType="default"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Department"
+                    value={department}
+                    onChangeText={setDepartment}
+                    keyboardType="default"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                />
 
 
-        </View>
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: "#fff",
         justifyContent: "center",
         alignItems: "center",
@@ -118,25 +143,13 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         width: "100%",
         alignItems: "center",
+        marginBottom: 20,
     },
     buttonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
-    },
-    loginContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 25,
-    },
-    loginText: {
-        color: "#666",
-        fontSize: 14,
-    },
-    loginLink: {
-        color: "#FFA500",
-        fontWeight: "bold",
-    },
+    }
 });
 
 export default Register;

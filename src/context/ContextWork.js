@@ -13,21 +13,14 @@ const ContextWork = ({ children }) => {
 
     const navigation = useNavigation()
 
-    const signUp = async (email, password, name) => {
+    const signUp = async (email, password, data) => {
+        navigation.navigate("Loading")
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const { user } = userCredential
 
             await updateProfile(user, {
-                displayName: name,
-            });
-
-            const newOwner = doc(collection(MyDb, "Owners"), user.uid)
-
-            await setDoc(newOwner, {
-                name: "Nebi",
-                email: "nebi@example.com",
-                department: "NebiDev"
+                displayName: data.name,
             });
 
             Toast.show({
@@ -38,6 +31,17 @@ const ContextWork = ({ children }) => {
                 visibilityTime: 3000,
                 autoHide: true
             });
+
+
+            const newOwner = doc(collection(MyDb, "Owners"), user.uid)
+
+            await setDoc(newOwner, {
+                name: data.name,
+                email: email,
+                department: data.department
+            });
+
+
 
         } catch (error) {
             let errorMessage = "Qeydiyyat uğursuz oldu, yenidən yoxlayın!";
@@ -108,12 +112,6 @@ const ContextWork = ({ children }) => {
         }
     };
 
-    const [user, setUser] = useState({
-        name: null,
-        email: null,
-        id: null,
-    });
-
 
     // add workers
     const [addingWorkers, setAddingWorkers] = useState()
@@ -128,17 +126,34 @@ const ContextWork = ({ children }) => {
         }
     }
 
-
+    const [user, setUser] = useState({
+        name: null,
+        email: null,
+        id: null,
+    });
     useEffect(() => {
         navigation.navigate("Loading")
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                setUser({
-                    name: currentUser.displayName,
-                    email: currentUser.email,
-                    id: currentUser.uid,
-                });
-                navigation.navigate("HomePage")
+
+                if (currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime) {
+                    navigation.navigate("Login")
+                } else {
+                    const userDocRef = doc(collection(MyDb, "Owners"), currentUser.uid);
+                    const userSnapshot = await getDoc(userDocRef);
+
+                    if (userSnapshot.exists()) {
+                        const userData = userSnapshot.data();
+                        setUser({
+                            name: userData.name,
+                            email: userData.email,
+                            id: userData.uid,
+                        });
+                        navigation.navigate("HomePage")
+                    }
+
+                }
+
             } else {
                 setUser(null);
                 navigation.navigate("Login")

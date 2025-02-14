@@ -18,7 +18,25 @@ const StackNavigate = () => {
         <MyStack.Navigator
         >
 
-            <MyStack.Screen name="Login" component={Login}
+            <MyStack.Screen
+                name="Loading"
+                component={Loading}
+                options={{
+                    gestureEnabled: false,
+                    headerShown: false,
+                    cardStyleInterpolator: () => ({
+                        cardStyle: { opacity: 1 }
+                    }),
+                    transitionSpec: {
+                        open: { animation: 'timing', config: { duration: 0 } },
+                        close: { animation: 'timing', config: { duration: 0 } },
+                    }
+                }}
+            />
+
+            <MyStack.Screen
+                name="Login"
+                component={Login}
                 options={{
                     headerLeft: () => null,
                     gestureEnabled: false,
@@ -39,22 +57,6 @@ const StackNavigate = () => {
                         <Ionicons style={{ marginLeft: 10 }} name="arrow-back" size={24} color="#FFA500" />
                     ),
 
-                }}
-            />
-
-            <MyStack.Screen
-                name="Loading"
-                component={Loading}
-                options={{
-                    gestureEnabled: false,
-                    headerShown: false,
-                    cardStyleInterpolator: () => ({
-                        cardStyle: { opacity: 1 }
-                    }),
-                    transitionSpec: {
-                        open: { animation: 'timing', config: { duration: 0 } },
-                        close: { animation: 'timing', config: { duration: 0 } },
-                    }
                 }}
             />
 

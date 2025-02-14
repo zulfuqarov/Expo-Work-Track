@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet, Easing } from 'react-native';
 
 const Loading = () => {
-    const rotateValue = new Animated.Value(0);
+    const rotateValue = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
+    const startRotation = () => {
+        rotateValue.setValue(0);
         Animated.loop(
             Animated.timing(rotateValue, {
                 toValue: 1,
@@ -13,9 +14,11 @@ const Loading = () => {
                 useNativeDriver: true,
             })
         ).start();
+    };
 
-
-    }, []);
+    useEffect(() => {
+        startRotation();
+    }, []); // Sadece bir kez çalışır ve refresh sonrası da sorunsuz başlar.
 
     const rotate = rotateValue.interpolate({
         inputRange: [0, 1],
@@ -55,7 +58,6 @@ const styles = StyleSheet.create({
         borderWidth: 5,
         borderColor: '#FFA500',
         borderTopColor: 'transparent',
-        animation: 'spin 1s linear infinite',
     },
     loadingText: {
         marginTop: 20,
