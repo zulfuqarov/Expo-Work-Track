@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from '@firebase/auth';
+import { collection, doc, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { MyDb, auth } from './../../connection/firebaseConfig';
 import Toast from 'react-native-toast-message';
 
@@ -21,10 +22,33 @@ const ContextWork = ({ children }) => {
                 displayName: name,
             });
 
-            alert("succes")
+            const newOwner = doc(collection(MyDb, "Owners"), user.uid)
+
+            await setDoc(newOwner, {
+                name: "Nebi",
+                email: "nebi@example.com",
+                department: "NebiDev"
+            });
+
+            Toast.show({
+                type: "success",
+                text1: "Qeydiyyat uğurlu!",
+                text2: "Qeydiyyat uğurlu tamamlandı ��",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
 
         } catch (error) {
-            alert(error.message);
+            let errorMessage = "Qeydiyyat uğursuz oldu, yenidən yoxlayın!";
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: errorMessage,
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            })
         }
     };
 
@@ -84,11 +108,26 @@ const ContextWork = ({ children }) => {
         }
     };
 
-
     const [user, setUser] = useState({
         name: null,
         email: null,
+        id: null,
     });
+
+
+    // add workers
+    const [addingWorkers, setAddingWorkers] = useState()
+    const addWorkersFunc = async (ownerId, workerData) => {
+        try {
+            const ordersRef = collection(MyDb, "Owners", ownerId, "workers");
+
+            await addDoc(ordersRef, workerData)
+            console.log("ok")
+        } catch (error) {
+            console.error("Xəta baş verdi:", error);
+        }
+    }
+
 
     useEffect(() => {
         navigation.navigate("Loading")
@@ -97,6 +136,7 @@ const ContextWork = ({ children }) => {
                 setUser({
                     name: currentUser.displayName,
                     email: currentUser.email,
+                    id: currentUser.uid,
                 });
                 navigation.navigate("HomePage")
             } else {
@@ -115,7 +155,8 @@ const ContextWork = ({ children }) => {
             signUp,
             loginUser,
             logoutUser,
-            user
+            user,
+            addWorkersFunc
         }}>
             {children}
         </WorkContext.Provider>
