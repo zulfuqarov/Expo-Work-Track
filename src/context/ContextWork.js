@@ -6,11 +6,11 @@ import { collection, doc, setDoc, getDoc, addDoc, getDocs, deleteDoc, onSnapshot
 import { MyDb, auth } from './../../connection/firebaseConfig';
 import Toast from 'react-native-toast-message';
 
+import { AppState } from 'react-native';
 
 export const WorkContext = createContext();
 
 const ContextWork = ({ children }) => {
-
     const navigation = useNavigation()
 
     const [user, setUser] = useState({
@@ -272,14 +272,25 @@ const ContextWork = ({ children }) => {
             const workerDoc = await getDoc(ordersRef);
             if (workerDoc.exists()) {
                 const workerData = workerDoc.data();
-                const workerDays = workerData.workerDay;
+                let workerDays = workerData.workerDay;
+
+                if (!workerDays) {
+                    workerDays = [];
+                }
 
                 const existingDateIndex = workerDays.findIndex(item => item.date === updateDate.date);
 
                 if (existingDateIndex > -1) {
                     workerDays[existingDateIndex].status = updateDate.status;
+                    workerDays[existingDateIndex].dailyEarnings = updateDate.dailyEarnings;
                 } else {
-                    workerDays.push({ date: updateDate.date, status: updateDate.status });
+                    workerDays.push(
+                        {
+                            date: updateDate.date,
+                            status: updateDate.status,
+                            dailyEarnings: updateDate.dailyEarnings
+                        }
+                    );
                 }
 
                 await updateDoc(ordersRef, {
@@ -372,8 +383,28 @@ const ContextWork = ({ children }) => {
         }
     }, [user?.id])
 
+
+
+    // date start
+    const [appState, setAppState] = useState(AppState.currentState);
+    const [date, setDate] = useState(new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', async nextAppState => {
+            if (appState.match(/inactive|background/) && nextAppState === 'active') {
+                setDate(new Date().toLocaleDateString('en-GB').replace(/\//g, '-'))
+            } else if (nextAppState === 'background') {
+
+            }
+            setAppState(nextAppState);
+        });
+
+        return () => subscription.remove();
+    }, [appState]);
+
+
     return (
         <WorkContext.Provider value={{
+            date,
             signUp,
             loginUser,
             logoutUser,

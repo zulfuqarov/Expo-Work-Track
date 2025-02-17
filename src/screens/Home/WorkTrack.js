@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Expo iconlarını kullanmak için
 import { WorkContext } from '../../context/ContextWork';
 
 
 
 
+
 const WorkTrack = () => {
+    const { workers, updateWorkerDay, date } = useContext(WorkContext)
 
-    const { workers, updateWorkerDay } = useContext(WorkContext)
-
-    const date = new Date().toLocaleDateString('en-GB').replace(/\//g, '-')
+    const [loading, setLoading] = useState(false)
 
     const checkDate = workers.map((user) => {
         const todayRecord = user.workerDay ? user.workerDay.find((oneFind) => oneFind.date === date) : null;
-        
+
         const updatedUser = { ...user };
 
 
@@ -41,7 +41,6 @@ const WorkTrack = () => {
 
 
     const [filter, setFilter] = useState('all');
-
     const filteredData = checkDate.filter(item =>
         filter === 'all' ? true : item.workerDay[0].status === filter
     );
@@ -56,8 +55,13 @@ const WorkTrack = () => {
         return styles.defaultStatus;
     };
 
+
+
+
+
     return (
         <View style={styles.container}>
+            {loading && <ActivityIndicator size="large" color="#FF8C00" style={styles.loader} />}
             <View style={styles.headerContainer}>
                 <Text style={styles.header}>Tarix: {date}</Text>
                 <View style={styles.filterButtons}>
@@ -80,6 +84,9 @@ const WorkTrack = () => {
                         <Text style={styles.filterText}>Hamısı</Text>
                     </TouchableOpacity>
                 </View>
+                <Text style={styles.workLength}>
+                    İşçilərin Sayı:  {filteredData.length}
+                </Text>
             </View>
 
             {/* Liste */}
@@ -96,18 +103,30 @@ const WorkTrack = () => {
                         </View>
                         <View style={styles.iconsContainer}>
                             <TouchableOpacity
-                                onPress={() => updateWorkerDay(item.id, {
-                                    status: "Gəldi",
-                                    date: date
-                                })}
+                                onPress={async () => {
+                                    setLoading(true)
+
+                                    await updateWorkerDay(item.id, {
+                                        status: "Gəldi",
+                                        date: date,
+                                        dailyEarnings: item.dailySalary
+                                    })
+                                    setLoading(false)
+
+                                }}
                                 style={styles.iconButton}>
                                 <Ionicons name="add-circle-outline" size={40} color="#4CAF50" />
                             </TouchableOpacity>
                             <TouchableOpacity
-                                onPress={() => updateWorkerDay(item.id, {
-                                    status: "Gəlmədi",
-                                    date: date
-                                })}
+                                onPress={async () => {
+                                    setLoading(true)
+                                    await updateWorkerDay(item.id, {
+                                        status: "Gəlmədi",
+                                        date: date,
+                                        dailyEarnings: 0
+                                    })
+                                    setLoading(false)
+                                }}
                                 style={styles.iconButton}>
                                 <Ionicons name="remove-circle-outline" size={40} color="#FF5722" />
                             </TouchableOpacity>
@@ -115,7 +134,7 @@ const WorkTrack = () => {
                     </View>
                 )}
             />
-        </View>
+        </View >
     );
 };
 
@@ -127,6 +146,17 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         marginBottom: 20,
+    },
+    loader: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        zIndex: 10,
     },
     header: {
         fontSize: 24,
@@ -149,6 +179,11 @@ const styles = StyleSheet.create({
     },
     activeFilter: {
         backgroundColor: '#000000',
+    },
+    workLength: {
+        paddingTop: 20,
+        fontSize: 22,
+        fontWeight: 600
     },
     filterText: {
         color: '#fff',

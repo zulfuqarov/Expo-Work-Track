@@ -23,8 +23,8 @@ const PersonalDetails = ({ route, navigation }) => {
                         text: "Yenilə", onPress: async () => {
                             setLoading(true);
                             try {
-                               await updateWorkerFunc(worker.id, worker);
-                               setLoading(false)
+                                await updateWorkerFunc(worker.id, worker);
+                                setLoading(false)
                             } catch (error) {
                                 console.log(error);
                                 setLoading(false)
@@ -58,11 +58,10 @@ const PersonalDetails = ({ route, navigation }) => {
         );
     };
 
-    // Handle input changes
     const handleChange = (field, value) => {
         setWorker({
             ...worker,
-            [field]: value,
+            [field]: field === "dailySalary" ? parseFloat(value) || "" : value,
         });
     };
 
@@ -124,7 +123,7 @@ const PersonalDetails = ({ route, navigation }) => {
                         {isEditing ? (
                             <TextInput
                                 style={styles.input}
-                                value={worker.dailySalary}
+                                value={worker.dailySalary.toString()}
                                 editable={isEditing}
                                 onChangeText={(text) => handleChange('dailySalary', text)}
                                 keyboardType="numeric"

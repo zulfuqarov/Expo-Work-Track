@@ -70,7 +70,7 @@ const AddPersonal = () => {
             firstName,
             lastName,
             position,
-            dailySalary,
+            dailySalary: parseFloat(dailySalary)
         })
 
         setFirstName("")
@@ -82,63 +82,64 @@ const AddPersonal = () => {
 
     };
 
-return (
-    <KeyboardAvoidingView
-        style={styles.containerKeyboard}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-            <View style={styles.container}>
-                <Ionicons name="person-add" size={80} color="#FFA500" style={styles.profileIcon} />
-                <Text style={styles.header}>İşçi Əlavə et</Text>
+    return (
+        <KeyboardAvoidingView
+            style={styles.containerKeyboard}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <View style={styles.container}>
+                    <Ionicons name="person-add" size={80} color="#FFA500" style={styles.profileIcon} />
+                    <Text style={styles.header}>İşçi Əlavə et</Text>
 
-                <TextInput
-                    style={[styles.input, errors.firstName && styles.inputError]}
-                    placeholder="Ad"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-                <TextInput
-                    style={[styles.input, errors.lastName && styles.inputError]}
-                    placeholder="Soyad"
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
-                <TextInput
-                    style={[styles.input, errors.position && styles.inputError]}
-                    placeholder="Vəzifə"
-                    value={position}
-                    onChangeText={setPosition}
-                />
-                <TextInput
-                    style={[styles.input, errors.dailySalary && styles.inputError]}
-                    placeholder="Gündəlik maaş (AZN)"
-                    value={dailySalary}
-                    onChangeText={setDailySalary}
-                    keyboardType="numeric"
-                />
+                    <TextInput
+                        style={[styles.input, errors.firstName && styles.inputError]}
+                        placeholder="Ad"
+                        value={firstName}
+                        onChangeText={setFirstName}
+                    />
+                    <TextInput
+                        style={[styles.input, errors.lastName && styles.inputError]}
+                        placeholder="Soyad"
+                        value={lastName}
+                        onChangeText={setLastName}
+                    />
+                    <TextInput
+                        style={[styles.input, errors.position && styles.inputError]}
+                        placeholder="Vəzifə"
+                        value={position}
+                        onChangeText={setPosition}
+                    />
+                    <TextInput
+                        style={[styles.input, errors.dailySalary && styles.inputError]}
+                        placeholder="Gündəlik maaş (AZN)"
+                        value={dailySalary}
+                        onChangeText={setDailySalary}
+                        keyboardType="numeric"
+                    />
 
-                <TouchableOpacity style={styles.addButton} onPress={handleAddUser}>
-                    <Text style={styles.addButtonText}>Əlavə et</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
-    </KeyboardAvoidingView>
-)}
+                    <TouchableOpacity style={styles.addButton} onPress={handleAddUser}>
+                        <Text style={styles.addButtonText}>Əlavə et</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    )
+}
 
 const styles = StyleSheet.create({
     containerKeyboard: {
         flex: 1,
-        justifyContent: "center", 
+        justifyContent: "center",
         paddingTop: Platform.OS === "ios" ? 20 : 0,
         backgroundColor: "#fff",
     },
     scrollView: {
         flexGrow: 1,
-        justifyContent: 'center',  
+        justifyContent: 'center',
     },
     container: {
-        alignItems: "center",  
+        alignItems: "center",
         paddingHorizontal: 20,
     },
     profileIcon: {

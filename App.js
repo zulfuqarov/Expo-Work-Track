@@ -9,7 +9,6 @@ import { StatusBar } from 'react-native';
 
 // navigate componets start
 import StackNavigate from './src/screens/navigation/StackNavigate';
-// import BottomNavigation from './src/screens/navigation/BottomNavigation';
 
 // context
 import ContextWork from './src/context/ContextWork';
@@ -22,7 +21,6 @@ function App() {
       <StatusBar barStyle="dark-content" />
       <ContextWork>
         <StackNavigate />
-        {/* <BottomNavigation /> */}
       </ContextWork>
       <Toast />
     </NavigationContainer>
