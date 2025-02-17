@@ -8,6 +8,8 @@ import Register from './../Form/Register';
 import BottomNavigation from './BottomNavigation';
 import { WorkContext } from './../../context/ContextWork';
 import Loading from '../../components/Loading';
+import PersonalDetails from '../Home/PersonalDetails';
+import DrawerNavigation from './DrawerNavigation';
 
 const MyStack = createStackNavigator()
 
@@ -43,6 +45,7 @@ const StackNavigate = () => {
 
                 }}
             />
+
             <MyStack.Screen
                 name="Register"
                 component={Register}
@@ -61,12 +64,29 @@ const StackNavigate = () => {
             />
 
             <MyStack.Screen
+                name="PersonalDetails"
+                component={PersonalDetails}
+                options={{
+                    title: "Işçi Haqqında",
+                    headerBackTitleStyle: {
+                        color: "#FFA500",
+                        marginLeft: 2,
+                        display: "none"
+                    },
+                    headerBackImage: () => (
+                        <Ionicons style={{ marginLeft: 10 }} name="arrow-back" size={24} color="#FFA500" />
+                    ),
+
+                }}
+            />
+
+            <MyStack.Screen
                 options={{
                     gestureEnabled: false,
                     headerShown: false,
                 }}
                 name='HomePage'
-                component={BottomNavigation}
+                component={DrawerNavigation}
             />
 
         </MyStack.Navigator>

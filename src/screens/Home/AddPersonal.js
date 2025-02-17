@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
-    TouchableWithoutFeedback, Keyboard
+    ScrollView, KeyboardAvoidingView, Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
@@ -23,7 +23,7 @@ const AddPersonal = () => {
         dailySalary: false,
     });
 
-    const handleAddUser = () => {
+    const handleAddUser = async () => {
         let formValid = true;
         let newErrors = { ...errors };
 
@@ -66,17 +66,28 @@ const AddPersonal = () => {
         }
 
 
-        addWorkersFunc(user.id, {
+        await addWorkersFunc(user.id, {
             firstName,
             lastName,
             position,
             dailySalary,
         })
 
+        setFirstName("")
+        setLastName("")
+        setPosition("")
+        setDailySalary("")
+
+
+
     };
 
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+return (
+    <KeyboardAvoidingView
+        style={styles.containerKeyboard}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+        <ScrollView contentContainerStyle={styles.scrollView}>
             <View style={styles.container}>
                 <Ionicons name="person-add" size={80} color="#FFA500" style={styles.profileIcon} />
                 <Text style={styles.header}>İşçi Əlavə et</Text>
@@ -111,16 +122,23 @@ const AddPersonal = () => {
                     <Text style={styles.addButtonText}>Əlavə et</Text>
                 </TouchableOpacity>
             </View>
-        </TouchableWithoutFeedback>
-    );
-};
+        </ScrollView>
+    </KeyboardAvoidingView>
+)}
 
 const styles = StyleSheet.create({
-    container: {
+    containerKeyboard: {
         flex: 1,
+        justifyContent: "center", 
+        paddingTop: Platform.OS === "ios" ? 20 : 0,
         backgroundColor: "#fff",
-        justifyContent: "center",
-        alignItems: "center",
+    },
+    scrollView: {
+        flexGrow: 1,
+        justifyContent: 'center',  
+    },
+    container: {
+        alignItems: "center",  
         paddingHorizontal: 20,
     },
     profileIcon: {
@@ -161,3 +179,4 @@ const styles = StyleSheet.create({
 });
 
 export default AddPersonal;
+

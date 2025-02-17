@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, cloneElement } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from '@firebase/auth';
-import { collection, doc, setDoc, getDoc, addDoc } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, addDoc, getDocs, deleteDoc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 import { MyDb, auth } from './../../connection/firebaseConfig';
 import Toast from 'react-native-toast-message';
 
@@ -12,6 +12,54 @@ export const WorkContext = createContext();
 const ContextWork = ({ children }) => {
 
     const navigation = useNavigation()
+
+    const [user, setUser] = useState({
+        name: null,
+        email: null,
+        department: null,
+        id: null,
+    });
+    const [workers, setWorkers] = useState([])
+
+    const getUserData = async (userId) => {
+        const userDocRef = doc(collection(MyDb, "Owners"), userId);
+        const userSnapshot = await getDoc(userDocRef);
+        if (userSnapshot.exists()) {
+            return {
+                ...userSnapshot.data(),
+                id: userSnapshot.id // id-ni data ilə birləşdiririk
+            };
+        }
+        return null;
+    }
+    const getWorkers = async (userId) => {
+        try {
+            const workRef = doc(MyDb, "Owners", userId)
+            const workRefCollection = collection(workRef, "workers")
+            const querySnapshot = await getDocs(workRefCollection);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+            return querySnapshot.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data(),
+                }
+            })
+
+        } catch (error) {
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "Yüklenən məlumatların yenilənməsi səhv oldu!",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
+        }
+    }
+
 
     const signUp = async (email, password, data) => {
         navigation.navigate("Loading")
@@ -60,6 +108,20 @@ const ContextWork = ({ children }) => {
         navigation.navigate("Loading")
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+            const userData = await getUserData(userCredential.user.uid)
+            const userWorkdata = await getWorkers(userData.uid)
+
+            if (userData) {
+                setUser({
+                    name: userData.name,
+                    email: userData.email,
+                    department: userData.department,
+                    id: userData.id,
+                });
+                setWorkers(userWorkdata)
+                navigation.navigate("HomePage")
+            }
             Toast.show({
                 type: "success",
                 text1: "Xoş gəldiniz!",
@@ -68,7 +130,7 @@ const ContextWork = ({ children }) => {
                 visibilityTime: 3000,
                 autoHide: true
             });
-            navigation.navigate("HomePage")
+
         } catch (error) {
             let errorMessage = "Giriş uğursuz oldu, yenidən yoxlayın!";
 
@@ -82,11 +144,10 @@ const ContextWork = ({ children }) => {
             });
             navigation.navigate("Login")
         }
-        finally {
-        }
     };
 
     const logoutUser = async () => {
+        navigation.navigate("Loading")
         try {
             await signOut(auth);
 
@@ -99,7 +160,6 @@ const ContextWork = ({ children }) => {
                 autoHide: true
             });
 
-            navigation.navigate("Login");
         } catch (error) {
             Toast.show({
                 type: "error",
@@ -116,21 +176,148 @@ const ContextWork = ({ children }) => {
     // add workers
     const [addingWorkers, setAddingWorkers] = useState()
     const addWorkersFunc = async (ownerId, workerData) => {
+        navigation.navigate("Loading")
+
         try {
             const ordersRef = collection(MyDb, "Owners", ownerId, "workers");
 
-            await addDoc(ordersRef, workerData)
-            console.log("ok")
+            await addDoc(ordersRef, {
+                ...workerData,
+                workerDay: []
+            })
+
+            navigation.goBack()
+
+            Toast.show({
+                type: "success",
+                text1: "İşçi Əlavə Edildi!",
+                text2: "Yeni işçi uğurla əlavə olundu.",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
+
+
+
         } catch (error) {
-            console.error("Xəta baş verdi:", error);
+            navigation.goBack()
+
+            Toast.show({
+                type: "error",
+                text1: "Əməliyyat Xətası",
+                text2: "İşçi əlavə edilərkən bir xəta baş verdi.",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
         }
     }
 
-    const [user, setUser] = useState({
-        name: null,
-        email: null,
-        id: null,
-    });
+    // delete workers
+    const deleteWorkerFunc = async (workerId) => {
+        try {
+            const ordersRef = doc(MyDb, "Owners", user.id, "workers", workerId);
+            await deleteDoc(ordersRef);
+            Toast.show({
+                type: "success",
+                text1: "Əməliyyat Uğurlu",
+                text2: "İşçi uğurla sistemdən silindi.",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
+
+        } catch (error) {
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "İşçi silinən zamanı problem yarandı, yenidən yoxlayın!",
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            });
+        }
+    }
+
+    // update workers
+    const updateWorkerFunc = async (workerId, updatedWorkerData) => {
+        try {
+            const ordersRef = doc(MyDb, "Owners", user.id, "workers", workerId);
+            await updateDoc(ordersRef, updatedWorkerData);
+            Toast.show({
+                type: "success",
+                text1: "məliyyat Uğurlu",
+                text2: "İşçi uğurla dəyişdirildi.",
+                position: "top",
+                visibilityTime: 3000,
+                autoHide: true
+            });
+
+        } catch (error) {
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "İşçi dəyişdirilən zamanı problem yarandı, yenidən yoxlayın!",
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            });
+        }
+    }
+
+    const updateWorkerDay = async (workerId, updateDate) => {
+        try {
+            const ordersRef = doc(MyDb, "Owners", user.id, "workers", workerId);
+
+            const workerDoc = await getDoc(ordersRef);
+            if (workerDoc.exists()) {
+                const workerData = workerDoc.data();
+                const workerDays = workerData.workerDay;
+
+                const existingDateIndex = workerDays.findIndex(item => item.date === updateDate.date);
+
+                if (existingDateIndex > -1) {
+                    workerDays[existingDateIndex].status = updateDate.status;
+                } else {
+                    workerDays.push({ date: updateDate.date, status: updateDate.status });
+                }
+
+                await updateDoc(ordersRef, {
+                    workerDay: workerDays
+                });
+
+                Toast.show({
+                    type: "success",
+                    text1: "Əməliyyat uğurla başa çatdı",
+                    text2: "İşçi günləri uğurla dəyişdirildi.",
+                    position: "top",
+                    visibilityTime: 3000,
+                    autoHide: true
+                });
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Xəta!",
+                    text2: "İşçi tapılmadı, yenidən yoxlayın!",
+                    position: "top",
+                    visibilityTime: 4000,
+                    autoHide: true
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            Toast.show({
+                type: "error",
+                text1: "Xəta!",
+                text2: "İşçi günləri dəyişdirilən zamanı problem yarandı, yenidən yoxlayın!",
+                position: "top",
+                visibilityTime: 4000,
+                autoHide: true
+            });
+        }
+    };
+
+
     useEffect(() => {
         navigation.navigate("Loading")
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -139,16 +326,17 @@ const ContextWork = ({ children }) => {
                 if (currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime) {
                     navigation.navigate("Login")
                 } else {
-                    const userDocRef = doc(collection(MyDb, "Owners"), currentUser.uid);
-                    const userSnapshot = await getDoc(userDocRef);
 
-                    if (userSnapshot.exists()) {
-                        const userData = userSnapshot.data();
+                    const userData = await getUserData(currentUser.uid);
+                    const userWorkdata = await getWorkers(currentUser.uid)
+                    if (userData) {
                         setUser({
                             name: userData.name,
                             email: userData.email,
-                            id: userData.uid,
+                            department: userData.department,
+                            id: userData.id,
                         });
+                        setWorkers(userWorkdata)
                         navigation.navigate("HomePage")
                     }
 
@@ -156,6 +344,7 @@ const ContextWork = ({ children }) => {
 
             } else {
                 setUser(null);
+                setWorkers([])
                 navigation.navigate("Login")
             }
         });
@@ -164,6 +353,24 @@ const ContextWork = ({ children }) => {
 
     }, [])
 
+    useEffect(() => {
+        if (user && user.id) {
+            const userRef = doc(MyDb, "Owners", user.id);
+            const workersCollection = collection(userRef, "workers");
+
+            const unsubscribe = onSnapshot(workersCollection, (snapshot) => {
+                const changeWorkers = snapshot.docs.map((doc) => {
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                    }
+                })
+                setWorkers(changeWorkers);
+            });
+
+            return () => unsubscribe();
+        }
+    }, [user?.id])
 
     return (
         <WorkContext.Provider value={{
@@ -171,7 +378,11 @@ const ContextWork = ({ children }) => {
             loginUser,
             logoutUser,
             user,
-            addWorkersFunc
+            workers,
+            addWorkersFunc,
+            deleteWorkerFunc,
+            updateWorkerFunc,
+            updateWorkerDay
         }}>
             {children}
         </WorkContext.Provider>
