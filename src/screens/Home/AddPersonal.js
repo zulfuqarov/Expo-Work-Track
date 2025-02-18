@@ -15,12 +15,14 @@ const AddPersonal = () => {
     const [lastName, setLastName] = useState("");
     const [position, setPosition] = useState("");
     const [dailySalary, setDailySalary] = useState();
+    const [workHoursSalary, setworkHoursSalary] = useState()
 
     const [errors, setErrors] = useState({
         firstName: false,
         lastName: false,
         position: false,
         dailySalary: false,
+        workHoursSalary: false,
     });
 
     const handleAddUser = async () => {
@@ -70,14 +72,15 @@ const AddPersonal = () => {
             firstName,
             lastName,
             position,
-            dailySalary: parseFloat(dailySalary)
+            dailySalary: parseFloat(dailySalary),
+            workHoursSalary: parseFloat(workHoursSalary)
         })
 
         setFirstName("")
         setLastName("")
         setPosition("")
         setDailySalary("")
-
+        setworkHoursSalary("")
 
 
     };
@@ -115,6 +118,13 @@ const AddPersonal = () => {
                         placeholder="Gündəlik maaş (AZN)"
                         value={dailySalary}
                         onChangeText={setDailySalary}
+                        keyboardType="numeric"
+                    />
+                    <TextInput
+                        style={[styles.input, errors.workHoursSalary && styles.inputError]}
+                        placeholder="Mesai haqqı (AZN)"
+                        value={workHoursSalary}
+                        onChangeText={setworkHoursSalary}
                         keyboardType="numeric"
                     />
 

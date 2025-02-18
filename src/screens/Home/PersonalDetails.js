@@ -61,7 +61,7 @@ const PersonalDetails = ({ route, navigation }) => {
     const handleChange = (field, value) => {
         setWorker({
             ...worker,
-            [field]: field === "dailySalary" ? parseFloat(value) || "" : value,
+            [field]: field === "dailySalary" || field === "workHoursSalary" ? parseFloat(value) || "" : value,
         });
     };
 
@@ -130,6 +130,21 @@ const PersonalDetails = ({ route, navigation }) => {
                             />
                         ) : (
                             <Text style={styles.fieldText}>{worker.dailySalary} ₼</Text>
+                        )}
+                    </View>
+
+                    <View style={styles.cardHeader}>
+                        <Text style={styles.label}>Mesai haqqı </Text>
+                        {isEditing ? (
+                            <TextInput
+                                style={styles.input}
+                                value={worker.workHoursSalary.toString()}
+                                editable={isEditing}
+                                onChangeText={(text) => handleChange('workHoursSalary', text)}
+                                keyboardType="numeric"
+                            />
+                        ) : (
+                            <Text style={styles.fieldText}>{worker.workHoursSalary} ₼</Text>
                         )}
                     </View>
                 </View>

@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import BottomNavigation from './BottomNavigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import WorkTrack from '../Home/WorkTrack';
+import WorkHours from '../Home/WorkHours';
 
 
 
@@ -23,10 +24,10 @@ const DrawerNavigation = () => {
                     />
                 ),
                 headerStyle: {
-                    height: 80, 
+                    height: 80,
                 },
-                drawerActiveTintColor: '#FF8C00', 
-                drawerInactiveTintColor: '#8E8E8E', 
+                drawerActiveTintColor: '#FF8C00',
+                drawerInactiveTintColor: '#8E8E8E',
             })}
 
         >
@@ -49,6 +50,15 @@ const DrawerNavigation = () => {
                 }}
                 name="WorkTracking"
                 component={WorkTrack} />
+            <Drawer.Screen
+                options={{
+                    title: 'Mesai saatları',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+                name="WorkHours"
+                component={WorkHours} />
         </Drawer.Navigator>
     );
 };
