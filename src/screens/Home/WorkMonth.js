@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import React, { useContext, useState, useMemo } from 'react';
 import { WorkContext } from './../../context/ContextWork';
 import DateTimePickerModal from "react-native-modal-datetime-picker"; // Tarix seçici
+import { Ionicons } from '@expo/vector-icons';
 
 const WorkMonth = () => {
 
@@ -15,27 +16,47 @@ const WorkMonth = () => {
     const formattedDate = currentDate.toLocaleDateString('en-GB').replace(/\//g, '-');
 
     const filteredWorkers = useMemo(() => {
+        let result = workers.filter(worker =>
+            worker.workerDay.some(day => day.date === formattedDate)
+        );
 
         if (filter === 'Gəlmədi') {
-            return workers.filter(worker =>
+            result = workers.filter(worker =>
                 worker.workerDay.some(day => day.date === formattedDate && day.status === "Gəlmədi")
             );
         }
         if (filter === 'Gəldi') {
-            return workers.filter(worker =>
+            result = workers.filter(worker =>
                 worker.workerDay.some(day => day.date === formattedDate && day.status === "Gəldi")
             );
         }
 
-        return workers;
-    }, [workers, filter]);
+        return result;
+
+    }, [workers, filter, formattedDate]);
 
 
-    const renderItem = ({ item }) => (
-        <View style={styles.userCard}>
-            <Text style={styles.userName}>{item.firstName} {item.lastName}</Text>
-        </View>
-    );
+
+    const renderItem = ({ item }) => {
+        const work = item.workerDay.find(day => day.date === formattedDate);
+        const earing = work.dailyEarnings + work.workHours * work.workHoursSalary
+        return (
+            <View style={styles.card}>
+                <Text style={styles.workerName}>{item.firstName} {item.lastName}</Text>
+                <Text style={styles.workerPosition}>{item.position}</Text>
+                <View style={styles.statusContainer}>
+                    <Text style={[styles.statusText, work.status === "Gəldi" ? styles.geldiStatus : styles.gelmediStatus]}>
+                        {work.status || "---"}
+                    </Text>
+                    <Text style={styles.timeText}>{work.date || "---"}</Text>
+                </View>
+                <Text style={[styles.remainingTimeText, work.workHours && styles.remainingTimeTextColor]}>
+                    <Text style={{ color: "black" }}>Mesai: </Text> {work.workHours ? work.workHours : "0"} saat
+                </Text>
+                <Text style={styles.earnings}>Günlük qazanc:  <Text style={styles.earningsColor}>{earing} Azn</Text></Text>
+            </View>
+        )
+    };
 
     const attendedCount = workers.filter(worker =>
         worker.workerDay.some(day => day.date === formattedDate && day.status === "Gəldi")
@@ -45,16 +66,16 @@ const WorkMonth = () => {
         worker.workerDay.some(day => day.date === formattedDate && day.status === "Gəlmədi")
     ).length;
 
-    // Tarixi dəyişmək üçün funksiyanı təyin edirik
     const handleConfirmDate = (date) => {
         setCurrentDate(date);
         setDatePickerVisible(false);
+        setFilter('all');
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>Bugünkü Hesabat</Text>
+                <Text style={styles.headerText}>Günlük Hesabat</Text>
                 <View style={styles.dateContainer}>
                     <Text style={styles.dateText}>Tarix: {formattedDate}</Text>
                     <View style={styles.dateView}>
@@ -95,17 +116,24 @@ const WorkMonth = () => {
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={filteredWorkers}
-                renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-                contentContainerStyle={styles.flatListContent}
-            />
+            {
+                filteredWorkers.length > 0 ?
+                    <FlatList
+                        data={filteredWorkers}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.id.toString()}
+                        contentContainerStyle={styles.flatListContent}
+                    /> :
+                    <View style={styles.noWorkersContainer}>
+                        <Text style={styles.noWorkersText}>Bu tarixdə işdə olan işçi yoxdur</Text>
+                    </View>
+            }
 
             {/* Tarix Seçici Modal */}
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
+                date={currentDate}
                 onConfirm={handleConfirmDate}
                 onCancel={() => setDatePickerVisible(false)}
             />
@@ -114,13 +142,90 @@ const WorkMonth = () => {
 };
 
 const styles = StyleSheet.create({
+
+
+    card: {
+        backgroundColor: "#FFF",
+        padding: 15,
+        paddingVertical: 25,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        width: '100%',
+    },
+    workerName: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#333",
+    },
+    workerPosition: {
+        fontSize: 16,
+        color: "#666",
+        marginBottom: 10,
+    },
+    statusContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 10,
+    },
+    statusText: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    geldiStatus: {
+        color: "green",
+    },
+    gelmediStatus: {
+        color: "red",
+    },
+    timeText: {
+        fontSize: 14,
+        color: "#555",
+    },
+    remainingTimeText: {
+        fontSize: 16,
+        fontWeight: "500",
+    },
+    remainingTimeTextColor: {
+        color: "green",
+    },
+    earnings: {
+        fontSize: 16,
+        fontWeight: "500",
+        paddingTop: 10,
+        color: "#555"
+    },
+    earningsColor: {
+        color: "green"
+    },
+    iconsContainer: {
+        marginTop: 10,
+        alignItems: "flex-end",
+    },
+    noWorkersContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f8f8f8',
+        padding: 20,
+    },
+    noWorkersText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#ff6347',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+
+
     container: {
         flex: 1,
         padding: 16,
         justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginTop: 50,
-        // backgroundColor: '#f5f5f5',
+        marginTop: 20,
     },
     header: {
         width: '100%',
