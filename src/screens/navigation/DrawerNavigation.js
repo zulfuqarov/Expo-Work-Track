@@ -5,6 +5,7 @@ import BottomNavigation from './BottomNavigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import WorkTrack from '../Home/WorkTrack';
 import WorkHours from '../Home/WorkHours';
+import WorkMonth from '../Home/WorkMonth';
 
 
 
@@ -59,6 +60,16 @@ const DrawerNavigation = () => {
                 }}
                 name="WorkHours"
                 component={WorkHours} />
+
+            <Drawer.Screen
+                options={{
+                    title: 'İşçi Gəlmə Hesabatı',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+                name="WorkMonth"
+                component={WorkMonth} />
         </Drawer.Navigator>
     );
 };

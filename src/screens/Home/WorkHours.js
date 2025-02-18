@@ -25,8 +25,6 @@ const WorkHours = () => {
     }, [workers, date]);
 
 
-    console.log(workers[0].workerDay[0].date)
-    console.log(date)
 
     const handleEditHours = (workerId) => {
         if (selectedWorkerId !== workerId) {
