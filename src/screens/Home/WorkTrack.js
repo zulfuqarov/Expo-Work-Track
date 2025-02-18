@@ -109,7 +109,9 @@ const WorkTrack = () => {
                                     await updateWorkerDay(item.id, {
                                         status: "Gəldi",
                                         date: date,
-                                        dailyEarnings: item.dailySalary
+                                        dailyEarnings: item.dailySalary,
+                                        workHoursSalary: 0,
+                                        workHours: 0
                                     })
                                     setLoading(false)
 
@@ -123,7 +125,9 @@ const WorkTrack = () => {
                                     await updateWorkerDay(item.id, {
                                         status: "Gəlmədi",
                                         date: date,
-                                        dailyEarnings: 0
+                                        dailyEarnings: 0,
+                                        workHoursSalary: 0,
+                                        workHours: 0
                                     })
                                     setLoading(false)
                                 }}

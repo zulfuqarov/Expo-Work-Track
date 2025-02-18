@@ -283,12 +283,16 @@ const ContextWork = ({ children }) => {
                 if (existingDateIndex > -1) {
                     workerDays[existingDateIndex].status = updateDate.status;
                     workerDays[existingDateIndex].dailyEarnings = updateDate.dailyEarnings;
+                    workerDays[existingDateIndex].workHoursSalary = updateDate.workHoursSalary;
+                    workerDays[existingDateIndex].workHours = updateDate.workHours;
                 } else {
                     workerDays.push(
                         {
                             date: updateDate.date,
                             status: updateDate.status,
-                            dailyEarnings: updateDate.dailyEarnings
+                            dailyEarnings: updateDate.dailyEarnings,
+                            workHoursSalary: updateDate.workHoursSalary,
+                            workHours: updateDate.workHours
                         }
                     );
                 }
@@ -341,6 +345,7 @@ const ContextWork = ({ children }) => {
 
                 if (existingDateIndex > -1) {
                     workerDays[existingDateIndex].workHours = updateDate.workHours;
+                    workerDays[existingDateIndex].workHoursSalary = workerData.workHoursSalary;
                 }
 
                 await updateDoc(ordersRef, {

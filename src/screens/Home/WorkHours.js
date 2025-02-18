@@ -10,11 +10,23 @@ const WorkHours = () => {
     const [selectedWorkerId, setSelectedWorkerId] = useState(null);
 
     const filteredData = useMemo(() => {
-        return workers.filter(item =>
-            item.workerDay.some(day => day.date === date && day.status === 'Gəldi')
-        );
+        return workers.map(worker => {
+            const filteredWorkerDays = worker.workerDay.filter(day => day.date === date && day.status === 'Gəldi');
+
+            if (filteredWorkerDays.length > 0) {
+                return {
+                    ...worker,
+                    workerDay: filteredWorkerDays
+                };
+            }
+
+            return null;
+        }).filter(worker => worker !== null);
     }, [workers, date]);
 
+
+    console.log(workers[0].workerDay[0].date)
+    console.log(date)
 
     const handleEditHours = (workerId) => {
         if (selectedWorkerId !== workerId) {
@@ -28,7 +40,13 @@ const WorkHours = () => {
     const handleSaveHours = async () => {
         if (editHours) {
             setLoading(true);
-            await updateWorkerHours(selectedWorkerId, { date: date, workHours: parseFloat(editHours) })
+            await updateWorkerHours(
+                selectedWorkerId,
+                {
+                    date: date,
+                    workHours: parseFloat(editHours)
+                }
+            )
             setLoading(false)
             setSelectedWorkerId(null);
             setEditHours(null);
