@@ -73,7 +73,7 @@ const DrawerNavigation = () => {
 
             <Drawer.Screen
                 options={{
-                    title: 'Günluk Hesabat',
+                    title: 'Aylıq Hesabat',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },

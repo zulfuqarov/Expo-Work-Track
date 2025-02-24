@@ -3,7 +3,7 @@ import React, { useContext, useState, useMemo } from 'react';
 import { WorkContext } from '../../context/ContextWork';
 import DateTimePickerModal from "react-native-modal-datetime-picker"; 
 
-const WorkMonth = () => {
+const WorkDealy = () => {
 
     const { workers } = useContext(WorkContext);
 
@@ -320,4 +320,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default WorkMonth;
+export default WorkDealy;
