@@ -5,8 +5,8 @@ import BottomNavigation from './BottomNavigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import WorkTrack from '../Home/WorkTrack';
 import WorkHours from '../Home/WorkHours';
+import WorkDealy from '../Home/WorkDealy';
 import WorkMonth from '../Home/WorkMonth';
-
 
 
 const Drawer = createDrawerNavigator();
@@ -44,7 +44,7 @@ const DrawerNavigation = () => {
             />
             <Drawer.Screen
                 options={{
-                    title: 'İşçi Gəlişinin İzlənməsi',
+                    title: 'İşçi Gəlişinin Qeydiyyatı',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
@@ -60,6 +60,16 @@ const DrawerNavigation = () => {
                 }}
                 name="WorkHours"
                 component={WorkHours} />
+
+            <Drawer.Screen
+                options={{
+                    title: 'Günluk Hesabat',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+                name="WorkDealy"
+                component={WorkDealy} />
 
             <Drawer.Screen
                 options={{
