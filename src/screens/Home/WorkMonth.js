@@ -55,7 +55,7 @@ const WorkMonth = () => {
             <Text style={styles.earnings}>Ayliq qazanc:  <Text style={styles.earningsColor}>{earing} Azn</Text></Text>
           </View>
           <TouchableOpacity
-            onPress={() => navigate('WorkMonthDetailsInfo', { worker: item, date: formattedDate })}
+            onPress={() => navigate('WorkMonthDetailsInfo', { worker: item, formattedDate: formattedDate })}
           >
             <MaterialCommunityIcons name="arrow-right" size={28} color="#FF8C00" />
           </TouchableOpacity>

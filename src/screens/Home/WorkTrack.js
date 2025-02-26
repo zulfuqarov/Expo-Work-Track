@@ -66,6 +66,12 @@ const WorkTrack = () => {
                 <Text style={styles.header}>Tarix: {date}</Text>
                 <View style={styles.filterButtons}>
                     <TouchableOpacity
+                        style={[styles.filterButton, filter === 'all' && styles.activeFilter]}
+                        onPress={() => setFilter('all')}
+                    >
+                        <Text style={styles.filterText}>Hamısı</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         style={[styles.filterButton, filter === 'Gəldi' && styles.activeFilter]}
                         onPress={() => setFilter('Gəldi')}
                     >
@@ -76,12 +82,6 @@ const WorkTrack = () => {
                         onPress={() => setFilter('Gəlmədi')}
                     >
                         <Text style={styles.filterText}>Gəlməyənlər</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.filterButton, filter === 'all' && styles.activeFilter]}
-                        onPress={() => setFilter('all')}
-                    >
-                        <Text style={styles.filterText}>Hamısı</Text>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.workLength}>
