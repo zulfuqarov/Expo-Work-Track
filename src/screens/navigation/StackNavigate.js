@@ -10,6 +10,7 @@ import { WorkContext } from './../../context/ContextWork';
 import Loading from '../../components/Loading';
 import PersonalDetails from '../Home/PersonalDetails';
 import DrawerNavigation from './DrawerNavigation';
+import WorkMonthDetailsInfo from '../Home/WorkMonthDetailsInfo';
 
 const MyStack = createStackNavigator()
 
@@ -80,6 +81,21 @@ const StackNavigate = () => {
                 }}
             />
 
+            <MyStack.Screen
+                name="WorkMonthDetailsInfo"
+                component={WorkMonthDetailsInfo}
+                options={{
+                    title: "Işçi Məlumatları",
+                    headerBackTitleStyle: {
+                        color: "#FFA500",
+                        marginLeft: 2,
+                        display: "none"
+                    },
+                    headerBackImage: () => (
+                        <Ionicons style={{ marginLeft: 10 }} name="arrow-back" size={24} color="#FFA500" />
+                    ),
+                }}
+            />
             <MyStack.Screen
                 options={{
                     gestureEnabled: false,

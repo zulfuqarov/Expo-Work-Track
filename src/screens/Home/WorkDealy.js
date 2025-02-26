@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
         padding: 15,
         paddingVertical: 25,
         borderRadius: 10,
+        marginBottom: 20,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ddd',
     },
     activeFilter: {
-        backgroundColor: '#007bff',
+        backgroundColor: '#FF8C00',
     },
     filterButtonText: {
         fontSize: 16,
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         paddingVertical: 5,
         paddingHorizontal: 15,
-        backgroundColor: '#007bff',
+        backgroundColor: '#FF8C00',
         borderRadius: 20,
     },
     changeDateButtonText: {
