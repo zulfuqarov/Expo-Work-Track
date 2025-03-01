@@ -1,42 +1,38 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import RNPickerSelect from "react-native-picker-select"
-
+import RNPickerSelect from "react-native-picker-select";
 import { WorkContext } from '../../context/ContextWork';
 
 const months = [
-    { label: "Harry January", value: "01" },
-    { label: "Harry February", value: "02" },
-    { label: "Harry March", value: "03" },
-    { label: "Harry April", value: "04" },
-    { label: "Harry May", value: "05" },
-    { label: "Harry June", value: "06" },
-    { label: "Harry July", value: "07" },
-    { label: "Harry August", value: "08" },
-    { label: "Harry September", value: "09" },
-    { label: "Harry October", value: "10" },
-    { label: "Harry November", value: "11" },
-    { label: "Harry December", value: "12" },
+    { label: "Yanvar", value: "01" },
+    { label: "Fevral", value: "02" },
+    { label: "Mart", value: "03" },
+    { label: "Aprel", value: "04" },
+    { label: "May", value: "05" },
+    { label: "İyun", value: "06" },
+    { label: "İyul", value: "07" },
+    { label: "Avqust", value: "08" },
+    { label: "Sentyabr", value: "09" },
+    { label: "Oktyabr", value: "10" },
+    { label: "Noyabr", value: "11" },
+    { label: "Dekabr", value: "12" },
 ];
 
 
-
 const EditWorkersWorkDay = () => {
-
     const { workers } = useContext(WorkContext);
-
     const [selectedWorker, setSelectedWorker] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-
     const [selectedDate, setSelectedDate] = useState(null);
-    const [selectedDateMonth, setSelectedDateMonth] = useState(null);
-
+    // const [selectedDateMonth, setSelectedDateMonth] = useState(null);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    // const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isMonthPickerVisible, setMonthPickerVisible] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    const [expandedCard, setExpandedCard] = useState(null);
+    const [expandedStatusCard, setExpandedStatusCard] = useState(null);
 
     const handleConfirmDate = (date) => {
         setCurrentDate(date);
@@ -45,17 +41,21 @@ const EditWorkersWorkDay = () => {
     };
 
     const handleConfirmMonth = (date) => {
-        setCurrentMonth(date);
-        setSelectedDateMonth(date.toLocaleDateString('en-GB').replace(/\//g, '-'));
-        setMonthPickerVisible(false);
-    }
-
-
+        // setCurrentMonth(date);
+        // setSelectedDateMonth(date.toLocaleDateString('en-GB').replace(/\//g, '-'));
+        // setMonthPickerVisible(false);
+    };
 
     const showDatePicker = () => setDatePickerVisible(true);
     const showMonthPicker = () => setMonthPickerVisible(true);
 
-    const [selectedMonth, setSelectedMonth] = useState(null);
+    const toggleExpandCard = (date) => {
+        setExpandedCard(expandedCard === date ? null : date);
+    };
+
+    const toggleExpandStatusCard = (date) => {
+        setExpandedStatusCard(expandedStatusCard === date ? null : date);
+    };
 
     return (
         <View style={styles.container}>
@@ -81,12 +81,43 @@ const EditWorkersWorkDay = () => {
                     <Text style={styles.modalTitle}>İşçi Detayları</Text>
                     {selectedWorker && (
                         <>
+                            <Text style={{
+                                fontSize: 14,
+                                color: '#333',
+                                marginBottom: 5
+                            }}>
+                                Müəyyən tarixə görə  tap
+                            </Text>
                             <TouchableOpacity onPress={showDatePicker} style={styles.datePickerButton}>
                                 <Text>Tarixi Seç: {selectedDate || 'Seçilməyib'}</Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity onPress={showMonthPicker} style={styles.datePickerButton}>
-                                <Text>Tarixi Seç: {selectedDateMonth || 'Seçilməyib'}</Text>
-                            </TouchableOpacity> */}
+                            <Text style={{
+                                fontSize: 14,
+                                color: '#333',
+                                marginBottom: 5
+                            }}>
+                                Müəyyən Ay-a görə  tap
+                            </Text>
+                            <TouchableOpacity onPress={() => setMonthPickerVisible(true)} style={styles.datePickerButton}>
+                                <Text >
+                                    <Text>{selectedMonth ? `Seçilen Ay: ${months.find(val => val.value === selectedMonth)?.label}` : "Ay Seç"}</Text>
+                                </Text>
+
+                                <Modal visible={isMonthPickerVisible} transparent animationType="slide">
+                                    <View style={styles.modalOverlay}>
+                                        <View style={styles.modalContent}>
+                                            <Text style={styles.modalText}>Ay Seç</Text>
+                                            <RNPickerSelect
+                                                onValueChange={(value) => setSelectedMonth(value)}
+                                                items={months}
+                                            />
+                                            <TouchableOpacity onPress={() => setMonthPickerVisible(false)} style={styles.confirmButton}>
+                                                <Text style={styles.confirmButtonText}>Tamam</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={() => setSelectedDate(null)} style={styles.datePickerButton}>
                                 <Text>Tarixi Sıfırla</Text>
                             </TouchableOpacity>
@@ -97,56 +128,59 @@ const EditWorkersWorkDay = () => {
                                 onConfirm={handleConfirmDate}
                                 onCancel={() => setDatePickerVisible(false)}
                             />
-                            {/* <DateTimePickerModal
-                                isVisible={isMonthPickerVisible}
-                                mode="date"
-                                display="spinner"
-                                date={currentMonth}
-                                onConfirm={handleConfirmMonth}
-                                onCancel={() => setMonthPickerVisible(false)}
-                            /> */}
 
-                            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                <TouchableOpacity onPress={() => setMonthPickerVisible(true)} style={{ backgroundColor: "orange", padding: 10, borderRadius: 5 }}>
-                                    <Text style={{ color: "white" }}>{selectedMonth ? `Seçilen Ay: ${months.find(val => val.value === selectedMonth)?.label}` : "Ay Seç"}</Text>
-                                </TouchableOpacity>
-
-                                <Modal visible={isMonthPickerVisible} transparent animationType="slide">
-                                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" }}>
-                                        <View style={{ backgroundColor: "white", padding: 20, borderRadius: 10, width: 300 }}>
-                                            <Text style={{ fontSize: 18, marginBottom: 10 }}>Ay Seç</Text>
-                                            <RNPickerSelect
-                                                onValueChange={(value) => setSelectedMonth(value)}
-                                                items={months}
-                                            />
-                                            <TouchableOpacity onPress={() => setMonthPickerVisible(false)} style={{ marginTop: 10, backgroundColor: "green", padding: 10, borderRadius: 5 }}>
-                                                <Text style={{ color: "white", textAlign: "center" }}>Tamam</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </Modal>
-                            </View>
 
                             <FlatList
                                 data={selectedWorker.workerDay.filter(day => {
                                     if (!selectedDate) {
                                         return true;
-                                    } else if (selectedDate && selectedDateMonth) {
-                                        day.date.split("-")[1] === selectedDateMonth.split("-")[1];
-                                    }
+                                    } 
+                                    // else if (selectedDate && selectedDateMonth) {
+                                    //     return day.date.split("-")[1] === selectedDateMonth.split("-")[1];
+                                    // }
                                     return day.date === selectedDate;
                                 })}
                                 keyExtractor={(item) => item.date}
                                 renderItem={({ item }) => (
+
                                     <View style={styles.dayItem}>
-                                        <Text>{item.date} - Status: <Text style={{ color: item.status === "Gəldi" ? "green" : "red" }}>{item.status}</Text> - Saat: {item.workHours}</Text>
-                                        <TextInput style={styles.input} placeholder="Yeni saat" keyboardType="numeric" />
-                                        <TouchableOpacity style={styles.saveButton}><Text>Yadda saxla</Text></TouchableOpacity>
+                                        <Text style={styles.workerName}>{selectedWorker.firstName} {selectedWorker.lastName}</Text>
+                                        <Text style={{
+                                            paddingBottom: 5,
+                                            color: item.status === 'Gəldi' ? '#4CAF50' : '#d9534f'
+                                        }}>
+                                            {item.status}
+                                        </Text>
+                                        <Text style={styles.dayText}>{item.date}</Text>
+                                        <TouchableOpacity style={styles.statusButton} onPress={() => toggleExpandStatusCard(item.date)}>
+                                            <Text style={styles.statusButtonText}>Qeydiyyat</Text>
+                                        </TouchableOpacity>
+                                        {expandedStatusCard === item.date && (
+                                            <View style={styles.statusButtonsContainer}>
+                                                <TouchableOpacity style={styles.statusChangeButtonArrived}>
+                                                    <Text style={styles.statusChangeButtonText}>Gəldi</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.statusChangeButtonNoArrived}>
+                                                    <Text style={styles.statusChangeButtonText}>Gəlmədi</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
+                                        <TouchableOpacity style={styles.changeHoursButton} onPress={() => toggleExpandCard(item.date)}>
+                                            <Text style={styles.changeHoursButtonText}>Mesai Saatini Dəyiş</Text>
+                                        </TouchableOpacity>
+                                        {expandedCard === item.date && (
+                                            <View>
+                                                <TextInput style={styles.input} placeholder="Yeni saat" keyboardType="numeric" />
+                                                <TouchableOpacity style={styles.changeHoursButtonConfirm}>
+                                                    <Text style={styles.changeHoursButtonText}>Yadda saxla</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
                                     </View>
                                 )}
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                                <Text>Bağla</Text>
+                                <Text style={styles.closeButtonText}>Bağla</Text>
                             </TouchableOpacity>
                         </>
                     )}
@@ -157,17 +191,33 @@ const EditWorkersWorkDay = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#f8f9fa' },
-    title: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-    workerItem: { padding: 15, backgroundColor: '#fff', marginVertical: 5, borderRadius: 8 },
-    workerText: { fontSize: 16 },
+    container: { flex: 1, padding: 20, backgroundColor: '#f0f2f5' },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#333' },
+    workerItem: { padding: 15, backgroundColor: '#fff', marginVertical: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
+    workerText: { fontSize: 18, color: '#333' },
     modalContainer: { flex: 1, padding: 20, backgroundColor: '#fff' },
-    modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-    datePickerButton: { padding: 10, backgroundColor: '#e1e1e1', marginBottom: 10, borderRadius: 5 },
-    dayItem: { padding: 10, backgroundColor: '#f1f1f1', marginVertical: 5, borderRadius: 5 },
-    input: { borderWidth: 1, padding: 8, marginVertical: 5, borderRadius: 5 },
-    saveButton: { padding: 10, backgroundColor: '#4CAF50', marginTop: 5, borderRadius: 5 },
-    closeButton: { padding: 10, backgroundColor: '#d9534f', marginTop: 10, borderRadius: 5 },
+    modalTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#333' },
+    datePickerButton: { padding: 12, backgroundColor: '#e1e1e1', marginBottom: 12, borderRadius: 8, alignItems: 'center' },
+    modalOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+    modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, width: 300 },
+    modalText: { fontSize: 18, marginBottom: 10, color: '#333' },
+    confirmButton: { marginTop: 10, backgroundColor: "#4CAF50", padding: 12, borderRadius: 8 },
+    confirmButtonText: { color: "white", textAlign: "center", fontWeight: 'bold' },
+    dayItem: { padding: 12, backgroundColor: '#f9f9f9', marginVertical: 8, borderRadius: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
+    workerName: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 5 },
+    dayText: { fontSize: 16, color: '#666', marginBottom: 10 },
+    statusButton: { padding: 10, backgroundColor: '#e1e1e1', borderRadius: 8, alignItems: 'center', marginBottom: 10 },
+    statusButtonText: { color: 'black', fontWeight: 'bold' },
+    statusButtonsContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+    statusChangeButtonNoArrived: { padding: 10, backgroundColor: '#d9534f', borderRadius: 8, alignItems: 'center', flex: 1, marginHorizontal: 5 },
+    statusChangeButtonArrived: { padding: 10, backgroundColor: '#4CAF50', borderRadius: 8, alignItems: 'center', flex: 1, marginHorizontal: 5 },
+    statusChangeButtonText: { color: 'white', fontWeight: 'bold' },
+    changeHoursButton: { padding: 10, backgroundColor: '#007BFF', borderRadius: 8, alignItems: 'center', marginBottom: 10 },
+    changeHoursButtonConfirm: { padding: 10, backgroundColor: '#4CAF50', borderRadius: 8, alignItems: 'center', width: 130, marginBottom: 10 },
+    changeHoursButtonText: { color: 'white', fontWeight: 'bold' },
+    input: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginVertical: 8, borderRadius: 8 },
+    closeButton: { padding: 12, backgroundColor: '#FF8C00', marginTop: 12, borderRadius: 8, alignItems: 'center' },
+    closeButtonText: { color: 'white', fontWeight: 'bold' },
 });
 
 export default EditWorkersWorkDay;
