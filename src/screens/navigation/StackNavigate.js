@@ -96,6 +96,7 @@ const StackNavigate = () => {
                     ),
                 }}
             />
+            
             <MyStack.Screen
                 options={{
                     gestureEnabled: false,

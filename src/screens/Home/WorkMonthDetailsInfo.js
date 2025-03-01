@@ -22,10 +22,10 @@ const WorkMonthDetailsInfo = () => {
         <View style={styles.container}>
             <Text style={styles.title}>İşçi Məlumatları</Text>
             <View style={styles.card}>
-                <Text style={styles.info}>Ad: {worker.firstName} {worker.lastName}</Text>
-                <Text style={styles.info}>Vəzifə: {worker.position}</Text>
-                <Text style={styles.info}>Bu ay qazancı: ${totalSalary}</Text>
-                <Text style={styles.info}>İşlədiyi günlər: {totalDaysWorked}</Text>
+                <Text style={styles.info}>Ad: -- {worker.firstName} {worker.lastName}</Text>
+                <Text style={styles.info}>Vəzifə: -- {worker.position}</Text>
+                <Text style={styles.info}>Bu ay qazancı: -- {totalSalary}-₼</Text>
+                <Text style={styles.info}>İşlədiyi günlər: -- {totalDaysWorked}-gün</Text>
             </View>
             <Text style={styles.subtitle}>İş Günü Detalları</Text>
             <FlatList
@@ -67,19 +67,22 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#ffffff',
-        padding: 15,
-        borderRadius: 10,
+        padding: 20,
+        borderRadius: 12,  
         shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 3 },
-        marginBottom: 15,
-        elevation: 3,
+        shadowOpacity: 0.08,
+        shadowRadius: 8, 
+        shadowOffset: { width: 0, height: 4 },
+        marginBottom: 20,
+        elevation: 4, 
+        borderLeftWidth: 6, 
+        borderLeftColor: '#FF8C00', 
     },
     info: {
-        fontSize: 16,
-        marginBottom: 5,
-        color: '#444',
+        fontSize: 18, 
+        fontWeight: '500',
+        marginBottom: 8,
+        color: '#222', 
     },
     dayCard: {
         backgroundColor: '#fff',

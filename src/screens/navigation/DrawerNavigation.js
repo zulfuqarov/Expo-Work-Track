@@ -7,6 +7,7 @@ import WorkTrack from '../Home/WorkTrack';
 import WorkHours from '../Home/WorkHours';
 import WorkDealy from '../Home/WorkDealy';
 import WorkMonth from '../Home/WorkMonth';
+import EditWorkersWorkDay from '../Home/EditWorkersWorkDay';
 
 
 const Drawer = createDrawerNavigator();
@@ -25,12 +26,11 @@ const DrawerNavigation = () => {
                     />
                 ),
                 headerStyle: {
-                    height: 80,
+                    height: 100,
                 },
                 drawerActiveTintColor: '#FF8C00',
                 drawerInactiveTintColor: '#8E8E8E',
             })}
-
         >
             <Drawer.Screen
                 options={{
@@ -51,10 +51,10 @@ const DrawerNavigation = () => {
                 }}
                 name="WorkTracking"
                 component={WorkTrack} />
-                
+
             <Drawer.Screen
                 options={{
-                    title: 'Mesai saatları',
+                    title: 'Mesai saatların əlavəsi',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
@@ -81,6 +81,17 @@ const DrawerNavigation = () => {
                 }}
                 name="WorkMonth"
                 component={WorkMonth} />
+
+            <Drawer.Screen
+                options={{
+                    title: 'İşçi Gününü və Mesai Düzəliş Et',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+                name="EditWorkersWorkDay"
+                component={EditWorkersWorkDay} />
+
         </Drawer.Navigator>
     );
 };

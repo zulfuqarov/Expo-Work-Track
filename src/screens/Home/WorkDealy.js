@@ -127,7 +127,6 @@ const WorkDealy = () => {
                     </View>
             }
 
-            {/* Tarix Seçici Modal */}
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
