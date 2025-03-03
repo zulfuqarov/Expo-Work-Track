@@ -184,13 +184,20 @@ const EditWorkersWorkDay = () => {
                                             <View style={styles.statusButtonsContainer}>
                                                 <TouchableOpacity
                                                     onPress={() => {
+                                                        const updatedWorker = {
+                                                            ...selectedWorker,
+                                                            workerDay: selectedWorker.workerDay.map(day =>
+                                                                day.date === item.date ? { ...day, status: "Gəldi" } : day
+                                                            )
+                                                        };
                                                         updateWorkerDay(selectedWorker.id, {
                                                             status: "Gəldi",
                                                             date: item.date,
-                                                            dailyEarnings: item.dailySalary,
-                                                            workHoursSalary: item.workHoursSalary,
+                                                            dailyEarnings: selectedWorker.dailySalary,
+                                                            workHoursSalary: selectedWorker.workHoursSalary,
                                                             workHours: item.workHours
                                                         })
+                                                        setSelectedWorker(updatedWorker);
                                                     }
                                                     }
                                                     style={styles.statusChangeButtonArrived}>
@@ -198,6 +205,12 @@ const EditWorkersWorkDay = () => {
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
                                                     onPress={() => {
+                                                        const updatedWorker = {
+                                                            ...selectedWorker,
+                                                            workerDay: selectedWorker.workerDay.map(day =>
+                                                                day.date === item.date ? { ...day, status: "Gəlmədi" } : day
+                                                            )
+                                                        };
                                                         updateWorkerDay(selectedWorker.id, {
                                                             status: "Gəlmədi",
                                                             date: item.date,
@@ -205,6 +218,7 @@ const EditWorkersWorkDay = () => {
                                                             workHoursSalary: 0,
                                                             workHours: 0
                                                         })
+                                                        setSelectedWorker(updatedWorker);
                                                     }}
                                                     style={styles.statusChangeButtonNoArrived}>
                                                     <Text style={styles.statusChangeButtonText}>Gəlmədi</Text>
