@@ -27,7 +27,7 @@ const ContextWork = ({ children }) => {
         if (userSnapshot.exists()) {
             return {
                 ...userSnapshot.data(),
-                id: userSnapshot.id // id-ni data ilə birləşdiririk
+                id: userSnapshot.id 
             };
         }
         return null;

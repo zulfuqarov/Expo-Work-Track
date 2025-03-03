@@ -21,14 +21,13 @@ const months = [
 
 
 const EditWorkersWorkDay = () => {
-    const { workers } = useContext(WorkContext);
+    const { workers, updateWorkerHours, updateWorkerDay } = useContext(WorkContext);
     const [selectedWorker, setSelectedWorker] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     // const [selectedDateMonth, setSelectedDateMonth] = useState(null);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-    // const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isMonthPickerVisible, setMonthPickerVisible] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [expandedCard, setExpandedCard] = useState(null);
@@ -38,16 +37,11 @@ const EditWorkersWorkDay = () => {
         setCurrentDate(date);
         setSelectedDate(date.toLocaleDateString('en-GB').replace(/\//g, '-'));
         setDatePickerVisible(false);
+        setSelectedMonth(false);
     };
 
-    const handleConfirmMonth = (date) => {
-        // setCurrentMonth(date);
-        // setSelectedDateMonth(date.toLocaleDateString('en-GB').replace(/\//g, '-'));
-        // setMonthPickerVisible(false);
-    };
 
     const showDatePicker = () => setDatePickerVisible(true);
-    const showMonthPicker = () => setMonthPickerVisible(true);
 
     const toggleExpandCard = (date) => {
         setExpandedCard(expandedCard === date ? null : date);
@@ -56,6 +50,24 @@ const EditWorkersWorkDay = () => {
     const toggleExpandStatusCard = (date) => {
         setExpandedStatusCard(expandedStatusCard === date ? null : date);
     };
+
+
+    // const filteredData = useMemo(() => {
+    //     return selectedWorker.workerDay.filter(day => {
+    //         if (selectedDate) {
+    //             return day.date === selectedDate;
+    //         } else if (!selectedDate && selectedMonth) {
+    //             return day.date.split('-')[1] === selectedMonth;
+    //         } else {
+    //             return true;
+    //         }
+    //     });
+    // }, [selectedWorker.workerDay, selectedDate, selectedMonth]); 
+
+
+    //update state workerDay start
+    const [workerHours, setworkerHours] = useState('')
+
 
     return (
         <View style={styles.container}>
@@ -111,14 +123,26 @@ const EditWorkersWorkDay = () => {
                                                 onValueChange={(value) => setSelectedMonth(value)}
                                                 items={months}
                                             />
-                                            <TouchableOpacity onPress={() => setMonthPickerVisible(false)} style={styles.confirmButton}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setSelectedDate(null);
+                                                    setCurrentDate(new Date())
+                                                    setMonthPickerVisible(false)
+                                                }}
+                                                style={styles.confirmButton}>
                                                 <Text style={styles.confirmButtonText}>Tamam</Text>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
                                 </Modal>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setSelectedDate(null)} style={styles.datePickerButton}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setSelectedMonth(null)
+                                    setSelectedDate(null)
+                                    setCurrentDate(new Date())
+                                }}
+                                style={styles.datePickerButton}>
                                 <Text>Tarixi Sıfırla</Text>
                             </TouchableOpacity>
                             <DateTimePickerModal
@@ -132,13 +156,13 @@ const EditWorkersWorkDay = () => {
 
                             <FlatList
                                 data={selectedWorker.workerDay.filter(day => {
-                                    if (!selectedDate) {
-                                        return true;
-                                    } 
-                                    // else if (selectedDate && selectedDateMonth) {
-                                    //     return day.date.split("-")[1] === selectedDateMonth.split("-")[1];
-                                    // }
-                                    return day.date === selectedDate;
+                                    if (selectedDate) {
+                                        return day.date === selectedDate;
+                                    } else if (!selectedDate && selectedMonth) {
+                                        return day.date.split('-')[1] === selectedMonth;
+                                    } else {
+                                        return true
+                                    }
                                 })}
                                 keyExtractor={(item) => item.date}
                                 renderItem={({ item }) => (
@@ -152,15 +176,37 @@ const EditWorkersWorkDay = () => {
                                             {item.status}
                                         </Text>
                                         <Text style={styles.dayText}>{item.date}</Text>
+                                        <Text style={styles.dayText}>Mesai saatı:  {item.workHours}</Text>
                                         <TouchableOpacity style={styles.statusButton} onPress={() => toggleExpandStatusCard(item.date)}>
                                             <Text style={styles.statusButtonText}>Qeydiyyat</Text>
                                         </TouchableOpacity>
                                         {expandedStatusCard === item.date && (
                                             <View style={styles.statusButtonsContainer}>
-                                                <TouchableOpacity style={styles.statusChangeButtonArrived}>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        updateWorkerDay(selectedWorker.id, {
+                                                            status: "Gəldi",
+                                                            date: item.date,
+                                                            dailyEarnings: item.dailySalary,
+                                                            workHoursSalary: item.workHoursSalary,
+                                                            workHours: item.workHours
+                                                        })
+                                                    }
+                                                    }
+                                                    style={styles.statusChangeButtonArrived}>
                                                     <Text style={styles.statusChangeButtonText}>Gəldi</Text>
                                                 </TouchableOpacity>
-                                                <TouchableOpacity style={styles.statusChangeButtonNoArrived}>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        updateWorkerDay(selectedWorker.id, {
+                                                            status: "Gəlmədi",
+                                                            date: item.date,
+                                                            dailyEarnings: 0,
+                                                            workHoursSalary: 0,
+                                                            workHours: 0
+                                                        })
+                                                    }}
+                                                    style={styles.statusChangeButtonNoArrived}>
                                                     <Text style={styles.statusChangeButtonText}>Gəlmədi</Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -170,8 +216,37 @@ const EditWorkersWorkDay = () => {
                                         </TouchableOpacity>
                                         {expandedCard === item.date && (
                                             <View>
-                                                <TextInput style={styles.input} placeholder="Yeni saat" keyboardType="numeric" />
-                                                <TouchableOpacity style={styles.changeHoursButtonConfirm}>
+                                                <TextInput
+                                                    value={workerHours.trim()}
+                                                    onChangeText={(text) => setworkerHours(text)}
+                                                    style={styles.input}
+                                                    placeholder="Yeni saat"
+                                                    keyboardType="number-pad"
+                                                />
+                                                <TouchableOpacity
+                                                    onPress={() => {
+
+                                                        if (workerHours.trim() === '') {
+                                                            alert('Saatı daxil edin');
+                                                            return;
+                                                        }
+
+                                                        const updatedWorker = {
+                                                            ...selectedWorker,
+                                                            workerDay: selectedWorker.workerDay.map(day =>
+                                                                day.date === item.date ? { ...day, workHours: parseFloat(workerHours) } : day
+                                                            )
+                                                        };
+
+                                                        updateWorkerHours(selectedWorker.id, {
+                                                            date: item.date,
+                                                            workHours: parseFloat(workerHours)
+                                                        });
+
+                                                        setSelectedWorker(updatedWorker);
+                                                        setworkerHours('');
+                                                    }}
+                                                    style={styles.changeHoursButtonConfirm}>
                                                     <Text style={styles.changeHoursButtonText}>Yadda saxla</Text>
                                                 </TouchableOpacity>
                                             </View>
