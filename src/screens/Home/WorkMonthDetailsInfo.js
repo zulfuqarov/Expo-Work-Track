@@ -16,6 +16,7 @@ const WorkMonthDetailsInfo = () => {
     const totalDaysWorked = DaysWorked.filter(day => day.status === 'Gəldi').length;
 
     const totalSalaryOverTime = DaysWorked.reduce((sum, day) => sum + (day.workHours * worker.workHoursSalary), 0);
+    const totalOvertime = DaysWorked.reduce((sum, day) => sum + day.workHours, 0)
     const totalSalary = (totalDaysWorked * worker.dailySalary) + totalSalaryOverTime;
 
     return (
@@ -24,8 +25,11 @@ const WorkMonthDetailsInfo = () => {
             <View style={styles.card}>
                 <Text style={styles.info}>Ad: -- {worker.firstName} {worker.lastName}</Text>
                 <Text style={styles.info}>Vəzifə: -- {worker.position}</Text>
-                <Text style={styles.info}>Bu ay qazancı: -- {totalSalary}-₼</Text>
+                <Text style={styles.info}>Günluk Maaş: -- {worker.dailySalary}₼</Text>
+                <Text style={styles.info}>Hər mesai üçün: -- {worker.workHoursSalary}₼</Text>
+                <Text style={styles.info}>Toplam mesai saatı: -- {totalOvertime}🕛</Text>
                 <Text style={styles.info}>İşlədiyi günlər: -- {totalDaysWorked}-gün</Text>
+                <Text style={styles.info}>Bu ay qazancı: -- {totalSalary}-₼</Text>
             </View>
             <Text style={styles.subtitle}>İş Günü Detalları</Text>
             <FlatList
@@ -34,8 +38,8 @@ const WorkMonthDetailsInfo = () => {
                 renderItem={({ item }) => (
                     <View style={[styles.dayCard, item.status === 'Gəlmədi' ? styles.absent : styles.present]}>
                         <Text style={styles.dayText}>{item.date}</Text>
-                        <Text style={styles.dayStatus}>{item.status}</Text>
-                        <Text style={styles.dayHours}>{item.workHours} saat</Text>
+                        <Text style={[styles.dayStatus, { color: item.status === "Gəlmədi" ? '#e74c3c' : '#2ecc71' }]}>{item.status}</Text>
+                        {/* <Text style={styles.dayHours}>{item.workHours} saat</Text> */}
                     </View>
                 )}
             />
@@ -68,21 +72,21 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: '#ffffff',
         padding: 20,
-        borderRadius: 12,  
+        borderRadius: 12,
         shadowColor: '#000',
         shadowOpacity: 0.08,
-        shadowRadius: 8, 
+        shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
         marginBottom: 20,
-        elevation: 4, 
-        borderLeftWidth: 6, 
-        borderLeftColor: '#FF8C00', 
+        elevation: 4,
+        borderLeftWidth: 6,
+        borderLeftColor: '#FF8C00',
     },
     info: {
-        fontSize: 18, 
+        fontSize: 18,
         fontWeight: '500',
         marginBottom: 8,
-        color: '#222', 
+        color: '#222',
     },
     dayCard: {
         backgroundColor: '#fff',

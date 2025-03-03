@@ -1,8 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native';
+import React, { useContext, useMemo, useState } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, TextInput, Image } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import RNPickerSelect from "react-native-picker-select";
+import { Ionicons } from "@expo/vector-icons";
 import { WorkContext } from '../../context/ContextWork';
+import AddWorkDayModal from './AddWorkDayModal';
 
 const months = [
     { label: "Yanvar", value: "01" },
@@ -32,6 +34,7 @@ const EditWorkersWorkDay = () => {
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [expandedCard, setExpandedCard] = useState(null);
     const [expandedStatusCard, setExpandedStatusCard] = useState(null);
+    const [isAddWorkDayModalVisible, setAddWorkDayModalVisible] = useState(false);
 
     const handleConfirmDate = (date) => {
         setCurrentDate(date);
@@ -66,6 +69,14 @@ const EditWorkersWorkDay = () => {
 
 
     //update state workerDay start
+
+    useMemo(()=>{
+        const findWorker = workers.find(worker => worker.id === selectedWorker?.id);
+        if(findWorker){
+            setSelectedWorker(findWorker)
+        }
+    },[workers])
+    
     const [workerHours, setworkerHours] = useState('')
 
 
@@ -90,7 +101,18 @@ const EditWorkersWorkDay = () => {
 
             <Modal visible={modalVisible} animationType="slide">
                 <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>İşçi Detayları</Text>
+                    <View style={styles.modalHeader}>
+                        <TouchableOpacity onPress={() => {
+                            setSelectedWorker(null)
+                            setSelectedDate(null)
+                            setSelectedMonth(null)
+
+                            setModalVisible(false)
+                        }}>
+                            <Ionicons name="arrow-back" size={24} color="#FF8C00" />
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 18, fontWeight: "bold" }} >İşçi Detayları</Text>
+                    </View>
                     {selectedWorker && (
                         <>
                             <Text style={{
@@ -145,6 +167,11 @@ const EditWorkersWorkDay = () => {
                                 style={styles.datePickerButton}>
                                 <Text>Tarixi Sıfırla</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => setAddWorkDayModalVisible(true)}
+                                style={styles.addNewDayButton}>
+                                <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>Yeni gün əlavə et</Text>
+                            </TouchableOpacity>
                             <DateTimePickerModal
                                 isVisible={isDatePickerVisible}
                                 mode="date"
@@ -166,7 +193,6 @@ const EditWorkersWorkDay = () => {
                                 })}
                                 keyExtractor={(item) => item.date}
                                 renderItem={({ item }) => (
-
                                     <View style={styles.dayItem}>
                                         <Text style={styles.workerName}>{selectedWorker.firstName} {selectedWorker.lastName}</Text>
                                         <Text style={{
@@ -184,12 +210,12 @@ const EditWorkersWorkDay = () => {
                                             <View style={styles.statusButtonsContainer}>
                                                 <TouchableOpacity
                                                     onPress={() => {
-                                                        const updatedWorker = {
-                                                            ...selectedWorker,
-                                                            workerDay: selectedWorker.workerDay.map(day =>
-                                                                day.date === item.date ? { ...day, status: "Gəldi" } : day
-                                                            )
-                                                        };
+                                                        // const updatedWorker = {
+                                                        //     ...selectedWorker,
+                                                        //     workerDay: selectedWorker.workerDay.map(day =>
+                                                        //         day.date === item.date ? { ...day, status: "Gəldi" } : day
+                                                        //     )
+                                                        // };
                                                         updateWorkerDay(selectedWorker.id, {
                                                             status: "Gəldi",
                                                             date: item.date,
@@ -197,7 +223,7 @@ const EditWorkersWorkDay = () => {
                                                             workHoursSalary: selectedWorker.workHoursSalary,
                                                             workHours: item.workHours
                                                         })
-                                                        setSelectedWorker(updatedWorker);
+                                                        // setSelectedWorker(updatedWorker);
                                                     }
                                                     }
                                                     style={styles.statusChangeButtonArrived}>
@@ -205,12 +231,12 @@ const EditWorkersWorkDay = () => {
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
                                                     onPress={() => {
-                                                        const updatedWorker = {
-                                                            ...selectedWorker,
-                                                            workerDay: selectedWorker.workerDay.map(day =>
-                                                                day.date === item.date ? { ...day, status: "Gəlmədi" } : day
-                                                            )
-                                                        };
+                                                        // const updatedWorker = {
+                                                        //     ...selectedWorker,
+                                                        //     workerDay: selectedWorker.workerDay.map(day =>
+                                                        //         day.date === item.date ? { ...day, status: "Gəlmədi" } : day
+                                                        //     )
+                                                        // };
                                                         updateWorkerDay(selectedWorker.id, {
                                                             status: "Gəlmədi",
                                                             date: item.date,
@@ -218,7 +244,7 @@ const EditWorkersWorkDay = () => {
                                                             workHoursSalary: 0,
                                                             workHours: 0
                                                         })
-                                                        setSelectedWorker(updatedWorker);
+                                                        // setSelectedWorker(updatedWorker);
                                                     }}
                                                     style={styles.statusChangeButtonNoArrived}>
                                                     <Text style={styles.statusChangeButtonText}>Gəlmədi</Text>
@@ -244,20 +270,24 @@ const EditWorkersWorkDay = () => {
                                                             alert('Saatı daxil edin');
                                                             return;
                                                         }
+                                                        if (item.status === 'Gəlmədi') {
+                                                            alert('İşçi gəlmədiyi üçün mesai saatını dəyişə bilməzsiniz')
+                                                            return;
+                                                        }
 
-                                                        const updatedWorker = {
-                                                            ...selectedWorker,
-                                                            workerDay: selectedWorker.workerDay.map(day =>
-                                                                day.date === item.date ? { ...day, workHours: parseFloat(workerHours) } : day
-                                                            )
-                                                        };
+                                                        // const updatedWorker = {
+                                                        //     ...selectedWorker,
+                                                        //     workerDay: selectedWorker.workerDay.map(day =>
+                                                        //         day.date === item.date ? { ...day, workHours: parseFloat(workerHours) } : day
+                                                        //     )
+                                                        // };
 
                                                         updateWorkerHours(selectedWorker.id, {
                                                             date: item.date,
                                                             workHours: parseFloat(workerHours)
                                                         });
 
-                                                        setSelectedWorker(updatedWorker);
+                                                        // setSelectedWorker(updatedWorker);
                                                         setworkerHours('');
                                                     }}
                                                     style={styles.changeHoursButtonConfirm}>
@@ -267,19 +297,54 @@ const EditWorkersWorkDay = () => {
                                         )}
                                     </View>
                                 )}
+                                ListEmptyComponent={() => (
+                                    <View style={styles.emptyContainer}>
+                                        <Image
+                                            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2748/2748558.png' }}
+                                            style={styles.emptyImage}
+                                        />
+                                        <Text style={styles.emptyText}>İşçi tapılmadı</Text>
+                                    </View>
+                                )}
                             />
-                            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.closeButtonText}>Bağla</Text>
-                            </TouchableOpacity>
                         </>
                     )}
                 </View>
+                <AddWorkDayModal
+                    isVisible={isAddWorkDayModalVisible}
+                    data={selectedWorker}
+                    onClose={() => setAddWorkDayModalVisible(false)}
+                />
             </Modal>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    modalHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 16,
+        backgroundColor: "#fff",
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        marginTop: 50,
+    },
+    emptyImage: {
+        width: 100,
+        height: 100,
+        marginBottom: 10,
+        opacity: 0.6,
+    },
+    emptyText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#555',
+    },
     container: { flex: 1, padding: 20, backgroundColor: '#f0f2f5' },
     title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#333' },
     workerItem: { padding: 15, backgroundColor: '#fff', marginVertical: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
@@ -287,6 +352,7 @@ const styles = StyleSheet.create({
     modalContainer: { flex: 1, padding: 20, backgroundColor: '#fff' },
     modalTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#333' },
     datePickerButton: { padding: 12, backgroundColor: '#e1e1e1', marginBottom: 12, borderRadius: 8, alignItems: 'center' },
+    addNewDayButton: { padding: 12, backgroundColor: '#FF8C00', marginBottom: 12, borderRadius: 8, alignItems: 'center' },
     modalOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
     modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, width: 300 },
     modalText: { fontSize: 18, marginBottom: 10, color: '#333' },
